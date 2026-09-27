@@ -11,7 +11,6 @@ import java.util.Stack;
 
 public class Main {
     public static void main(String[] args) {
-        // Mencari file transactions.txt dari working directory atau classpath
         InputStream inputStream = null;
         File file = new File("transactions.txt");
         if (file.exists()) {
@@ -42,7 +41,6 @@ public class Main {
             return;
         }
 
-        // 1. Read and store transactions - LinkedList<String[]>
         LinkedList<String[]> transactions = new LinkedList<>();
         try (Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
@@ -57,8 +55,6 @@ public class Main {
             }
         }
 
-        // 2. Create customer data - LinkedList<String[]> (name and current balance)
-        // Initial balance is 0. Preserve first-appearance order, do not add duplicates.
         LinkedList<String[]> customers = new LinkedList<>();
         for (String[] tx : transactions) {
             String name = tx[0];
@@ -74,13 +70,11 @@ public class Main {
             }
         }
 
-        // 3. Process transactions using Queue (FIFO)
         Queue<String[]> transactionQueue = new LinkedList<>();
         for (String[] tx : transactions) {
             transactionQueue.offer(tx);
         }
 
-        // 4. Store failed transactions using Stack (LIFO)
         Stack<String[]> failedTransactions = new Stack<>();
 
         while (!transactionQueue.isEmpty()) {
@@ -89,7 +83,6 @@ public class Main {
             String type = tx[1];
             int amount = Integer.parseInt(tx[2]);
 
-            // Mencari data customer yang bersangkutan
             String[] currentCustomer = null;
             for (String[] cust : customers) {
                 if (cust[0].equals(name)) {
@@ -106,7 +99,6 @@ public class Main {
                     currentCustomer[1] = String.valueOf(currentBalance);
                 } else if (type.equalsIgnoreCase("WITHDRAW")) {
                     if (amount > currentBalance) {
-                        // Saldo tidak mencukupi, transaksi gagal
                         failedTransactions.push(tx);
                     } else {
                         currentBalance -= amount;
@@ -116,7 +108,6 @@ public class Main {
             }
         }
 
-        // 5. Display the final balance and failed withdrawal transactions
         System.out.println("=== Final Balances ===");
         for (String[] cust : customers) {
             System.out.println(cust[0] + " : " + cust[1]);
